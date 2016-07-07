@@ -1,4 +1,4 @@
-package com.yamblz.memoryleakssample.ui;
+package com.yamblz.memoryleakssample.ui.artists_list;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
@@ -78,9 +78,6 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         @BindView(R.id.artist_songs)
         TextView songsTextView;
 
-        @BindView(R.id.artist_description)
-        TextView descriptionTextView;
-
         public ArtistVH(View itemView)
         {
             super(itemView);
@@ -89,9 +86,8 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
 
         public void bind(@NonNull Artist artist)
         {
-            picasso.load(artist.getCover().getBigImageUrl()).into(posterImageView);
+            picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
             nameTextView.setText(artist.getName());
-            descriptionTextView.setText(artist.getDescription());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
                                                                artist.getAlbumsCount(),
                                                                artist.getAlbumsCount()));

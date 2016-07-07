@@ -1,17 +1,20 @@
-package com.yamblz.memoryleakssample.ui;
+package com.yamblz.memoryleakssample.ui.artists_list;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
-import com.squareup.picasso.Picasso;
+import com.yamblz.memoryleakssample.ui.DividerItemDecoration;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,15 +39,20 @@ public class ArtistsListActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(
-                new DividerItemDecoration(this, R.drawable.divider));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this));
 
         showProgress();
         getSupportLoaderManager().initLoader(
                 ARTISTS_LOADER_ID,
                 null,
                 this).forceLoad();
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs)
+    {
+        return super.onCreateView(name, context, attrs);
     }
 
     @Override

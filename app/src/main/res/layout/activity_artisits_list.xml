@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dividerColor"
-    tools:context=".ui.ArtistsListActivity">
+    tools:context=".ui.artists_list.ArtistsListActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/artists_recycler_view"
         android:layout_width="match_parent"
-        android:background="@color/dividerColor"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@color/dividerColor"/>
 
     <ProgressBar
         android:id="@+id/progress_bar"
