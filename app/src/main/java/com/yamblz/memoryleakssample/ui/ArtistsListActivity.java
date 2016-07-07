@@ -1,6 +1,7 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -93,10 +94,16 @@ public class ArtistsListActivity extends AppCompatActivity
                                                         @Override
                                                         public void onClickArtist(@NonNull Artist artist)
                                                         {
-                                                            //TODO show artist activity
+                                                            showArtistDetails(artist);
                                                         }
                                                     });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
+
+    private void showArtistDetails(@NonNull Artist artist)
+    {
+        ArtistDetailsActivity.artist = artist;
+        startActivity(new Intent(this, ArtistDetailsActivity.class));
     }
 }
