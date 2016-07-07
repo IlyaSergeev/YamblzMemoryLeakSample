@@ -54,6 +54,12 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         this.listener = listener;
     }
 
+    @NonNull
+    public Artist getArtist(int position)
+    {
+        return artists[position];
+    }
+
     @Override
     public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType)
     {
