@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:name=".SampleApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.artists_list.ArtistsListActivity">
+        <activity android:name=".ui.ArtistsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

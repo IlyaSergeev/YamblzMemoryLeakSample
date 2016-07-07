@@ -2,7 +2,7 @@ package com.yamblz.memoryleakssample;
 
 import android.app.Application;
 
-import com.yamblz.memoryleakssample.ui.artists_list.ArtistsListActivity;
+import com.yamblz.memoryleakssample.ui.ArtistsListActivity;
 
 /**
  * Created by i-sergeev on 07.07.16
