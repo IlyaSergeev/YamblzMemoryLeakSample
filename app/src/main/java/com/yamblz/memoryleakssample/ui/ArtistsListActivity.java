@@ -1,6 +1,5 @@
 package com.yamblz.memoryleakssample.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -22,8 +20,6 @@ import butterknife.ButterKnife;
 
 public class ArtistsListActivity extends AppCompatActivity
 {
-    private static Artist firstVisibleArtist;
-
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -80,13 +76,8 @@ public class ArtistsListActivity extends AppCompatActivity
     {
         super.onPause();
         int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-    }
-
-    @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs)
-    {
-        return super.onCreateView(name, context, attrs);
+        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
+        ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
     }
 
     private void showProgress()
@@ -114,6 +105,7 @@ public class ArtistsListActivity extends AppCompatActivity
         recyclerView.setAdapter(artistsAdapter);
         artistsAdapter.notifyDataSetChanged();
 
+        Artist firstVisibleArtist = ((SampleApplication)getApplication()).getFirstVisibleArtistInListActivity();
         if (firstVisibleArtist != null)
         {
             for (int i = 0; i < data.length; i++)
