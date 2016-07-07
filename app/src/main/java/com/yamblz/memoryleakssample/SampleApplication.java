@@ -2,6 +2,7 @@ package com.yamblz.memoryleakssample;
 
 import android.app.Application;
 
+import com.yamblz.memoryleakssample.communication.Api;
 import com.yamblz.memoryleakssample.ui.ArtistsListActivity;
 
 /**
@@ -9,10 +10,17 @@ import com.yamblz.memoryleakssample.ui.ArtistsListActivity;
  */
 public class SampleApplication extends Application
 {
-    private static ArtistsListActivity artistsListActivity;
+    private static Api api;
 
-    public static void setArtistsListActivity(ArtistsListActivity artistsListActivity)
+    public static Api getApi()
     {
-        SampleApplication.artistsListActivity = artistsListActivity;
+        return api;
+    }
+
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+        api = new Api(this);
     }
 }

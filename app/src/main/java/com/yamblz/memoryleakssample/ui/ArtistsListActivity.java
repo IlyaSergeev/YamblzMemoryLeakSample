@@ -1,10 +1,9 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,16 +13,14 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
+import com.yamblz.memoryleakssample.SampleApplication;
 import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ArtistsListActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Artist[]>
 {
-    private static final int ARTISTS_LOADER_ID = 101;
-
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -41,36 +38,40 @@ public class ArtistsListActivity extends AppCompatActivity
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
+    }
 
-        showProgress();
-        getSupportLoaderManager().initLoader(
-                ARTISTS_LOADER_ID,
-                null,
-                this).forceLoad();
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        new AsyncTask<Void, Void, Artist[]>()
+        {
+            @Override
+            protected void onPreExecute()
+            {
+                super.onPreExecute();
+                showProgress();
+            }
+
+            @Override
+            protected Artist[] doInBackground(Void... voids)
+            {
+                return SampleApplication.getApi().getArtists();
+            }
+
+            @Override
+            protected void onPostExecute(Artist[] artists)
+            {
+                super.onPostExecute(artists);
+                showContent(artists);
+            }
+        }.execute();
     }
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs)
     {
         return super.onCreateView(name, context, attrs);
-    }
-
-    @Override
-    public Loader<Artist[]> onCreateLoader(int id, Bundle args)
-    {
-        return new ArtistsLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Artist[]> loader, Artist[] data)
-    {
-        showContent(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Artist[]> loader)
-    {
-
     }
 
     private void showProgress()
@@ -92,7 +93,7 @@ public class ArtistsListActivity extends AppCompatActivity
                                                         @Override
                                                         public void onClickArtist(@NonNull Artist artist)
                                                         {
-                                                            //TODO
+                                                            //TODO show artist activity
                                                         }
                                                     });
         recyclerView.setAdapter(adapter);
