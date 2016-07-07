@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.SampleApplication;
+import com.yamblz.memoryleakssample.communication.Api;
 import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
@@ -28,6 +29,7 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+    private Api api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,13 +43,15 @@ public class ArtistsListActivity extends AppCompatActivity
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
+
+        api = new Api(this);
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
+        new AsyncTask<Api, Void, Artist[]>()
         {
             @Override
             protected void onPreExecute()
@@ -57,9 +61,9 @@ public class ArtistsListActivity extends AppCompatActivity
             }
 
             @Override
-            protected Artist[] doInBackground(Void... voids)
+            protected Artist[] doInBackground(Api... apis)
             {
-                return SampleApplication.getApi().getArtists();
+                return apis[0].getArtists();
             }
 
             @Override
@@ -68,7 +72,7 @@ public class ArtistsListActivity extends AppCompatActivity
                 super.onPostExecute(artists);
                 showContent(artists);
             }
-        }.execute();
+        }.execute(api);
     }
 
     @Override
