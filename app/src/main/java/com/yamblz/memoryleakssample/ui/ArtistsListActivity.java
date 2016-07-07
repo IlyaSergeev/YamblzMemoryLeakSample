@@ -1,4 +1,4 @@
-package com.yamblz.memoryleakssample.ui.artists_list;
+package com.yamblz.memoryleakssample.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
-import com.yamblz.memoryleakssample.ui.DividerItemDecoration;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

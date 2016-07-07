@@ -1,4 +1,4 @@
-package com.yamblz.memoryleakssample.ui.artists_list;
+package com.yamblz.memoryleakssample.ui;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
