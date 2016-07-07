@@ -22,11 +22,16 @@ import butterknife.ButterKnife;
 
 public class ArtistsListActivity extends AppCompatActivity
 {
+    private static Artist firstVisibleArtist;
+
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
+
+    private GridLayoutManager gridLayoutManager;
+    private ArtistsAdapter artistsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,7 +42,8 @@ public class ArtistsListActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        gridLayoutManager = new GridLayoutManager(this, 2);
+        recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
     }
 
@@ -70,6 +76,14 @@ public class ArtistsListActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause()
+    {
+        super.onPause();
+        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+        firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
+    }
+
+    @Override
     public View onCreateView(String name, Context context, AttributeSet attrs)
     {
         return super.onCreateView(name, context, attrs);
@@ -86,19 +100,31 @@ public class ArtistsListActivity extends AppCompatActivity
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        ArtistsAdapter adapter = new ArtistsAdapter(data,
-                                                    Picasso.with(this),
-                                                    getResources(),
-                                                    new ArtistsAdapter.ArtistsAdapterListener()
-                                                    {
-                                                        @Override
-                                                        public void onClickArtist(@NonNull Artist artist)
-                                                        {
-                                                            showArtistDetails(artist);
-                                                        }
-                                                    });
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        artistsAdapter = new ArtistsAdapter(data,
+                                            Picasso.with(this),
+                                            getResources(),
+                                            new ArtistsAdapter.ArtistsAdapterListener()
+                                            {
+                                                @Override
+                                                public void onClickArtist(@NonNull Artist artist)
+                                                {
+                                                    showArtistDetails(artist);
+                                                }
+                                            });
+        recyclerView.setAdapter(artistsAdapter);
+        artistsAdapter.notifyDataSetChanged();
+
+        if (firstVisibleArtist != null)
+        {
+            for (int i = 0; i < data.length; i++)
+            {
+                if (data[i].getId().equals(firstVisibleArtist.getId()))
+                {
+                    recyclerView.scrollToPosition(i);
+                    break;
+                }
+            }
+        }
     }
 
     private void showArtistDetails(@NonNull Artist artist)
