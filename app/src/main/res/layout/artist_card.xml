@@ -26,9 +26,9 @@
         android:id="@+id/artist_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/artist_songs"
+        android:layout_alignLeft="@+id/artist_tracks"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/artist_songs"
+        android:layout_alignRight="@+id/artist_tracks"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
@@ -38,7 +38,7 @@
         />
 
     <TextView
-        android:id="@+id/artist_songs"
+        android:id="@+id/artist_tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/artist_name"
@@ -53,9 +53,9 @@
         android:id="@+id/artist_albums"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/artist_songs"
-        android:layout_alignLeft="@+id/artist_songs"
-        android:layout_alignRight="@+id/artist_songs"
+        android:layout_above="@+id/artist_tracks"
+        android:layout_alignLeft="@+id/artist_tracks"
+        android:layout_alignRight="@+id/artist_tracks"
         android:gravity="right"
         android:text="12 альбомов"
         android:textAppearance="?android:attr/textAppearanceSmall"
