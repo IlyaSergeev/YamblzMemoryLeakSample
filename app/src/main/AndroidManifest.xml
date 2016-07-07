@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.yamblz.memoryleakssample"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.yamblz.memoryleakssample"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".SampleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name=".SampleApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.ArtistsListActivity">
             <intent-filter>
@@ -17,6 +19,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.ArtistDetailsActivity"
+            android:parentActivityName=".ui.ArtistsListActivity"
+            tools:ignore="UnusedAttribute">
+            <!-- Parent activity meta-data to support API level 4+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ArtistsListActivity"/>
         </activity>
     </application>
 

@@ -85,7 +85,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         @BindView(R.id.artist_albums)
         TextView albumsTextView;
 
-        @BindView(R.id.artist_songs)
+        @BindView(R.id.artist_tracks)
         TextView songsTextView;
 
         private Artist artist;
