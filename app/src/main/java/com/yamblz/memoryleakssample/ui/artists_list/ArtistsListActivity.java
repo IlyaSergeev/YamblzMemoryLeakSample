@@ -2,6 +2,7 @@ package com.yamblz.memoryleakssample.ui.artists_list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -86,7 +87,15 @@ public class ArtistsListActivity extends AppCompatActivity
 
         ArtistsAdapter adapter = new ArtistsAdapter(data,
                                                     Picasso.with(this),
-                                                    getResources());
+                                                    getResources(),
+                                                    new ArtistsAdapter.ArtistsAdapterListener()
+                                                    {
+                                                        @Override
+                                                        public void onClickArtist(@NonNull Artist artist)
+                                                        {
+                                                            //TODO
+                                                        }
+                                                    });
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

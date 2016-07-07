@@ -31,9 +31,13 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     @NonNull
     private final Resources resources;
 
+    @NonNull
+    private final ArtistsAdapterListener listener;
+
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
-                          @NonNull Resources resources)
+                          @NonNull Resources resources,
+                          ArtistsAdapterListener listener)
     {
         this.picasso = picasso;
         this.resources = resources;
@@ -42,6 +46,12 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
             artists = new Artist[0];
         }
         this.artists = artists;
+
+        if (listener == null)
+        {
+            listener = ArtistsAdapterListener.NULL;
+        }
+        this.listener = listener;
     }
 
     @Override
@@ -78,14 +88,25 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         @BindView(R.id.artist_songs)
         TextView songsTextView;
 
+        private Artist artist;
+
         public ArtistVH(View itemView)
         {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    listener.onClickArtist(artist);
+                }
+            });
         }
 
         public void bind(@NonNull Artist artist)
         {
+            this.artist = artist;
             picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
             nameTextView.setText(artist.getName());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
@@ -95,5 +116,19 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
                                                               artist.getTracksCount(),
                                                               artist.getTracksCount()));
         }
+    }
+
+    public interface ArtistsAdapterListener
+    {
+        void onClickArtist(@NonNull Artist artist);
+
+        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
+        {
+            @Override
+            public void onClickArtist(@NonNull Artist artist)
+            {
+
+            }
+        };
     }
 }
