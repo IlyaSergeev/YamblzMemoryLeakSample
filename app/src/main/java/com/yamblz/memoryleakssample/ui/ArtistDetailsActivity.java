@@ -15,6 +15,8 @@ import butterknife.ButterKnife;
 
 public class ArtistDetailsActivity extends AppCompatActivity
 {
+    public static final String ARG_ARTIST = "artist";
+
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
 
@@ -30,7 +32,7 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
+    public Artist artist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,6 +41,8 @@ public class ArtistDetailsActivity extends AppCompatActivity
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
         clearViews();
+
+        artist = getIntent().getParcelableExtra(ARG_ARTIST);
     }
 
     @Override

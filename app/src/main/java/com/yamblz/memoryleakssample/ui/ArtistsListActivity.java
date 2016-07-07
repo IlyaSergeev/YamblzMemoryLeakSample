@@ -135,8 +135,9 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private void showArtistDetails(@NonNull Artist artist)
     {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra(ArtistDetailsActivity.ARG_ARTIST, artist);
+        startActivity(intent);
     }
 
     private static class ArtistsLoadingTask extends AsyncTask<Api, Void, Artist[]>

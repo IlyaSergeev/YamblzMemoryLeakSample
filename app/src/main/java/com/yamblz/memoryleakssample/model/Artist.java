@@ -1,11 +1,14 @@
 package com.yamblz.memoryleakssample.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class Artist
+public class Artist implements Parcelable
 {
     @SerializedName("id")
     private final String id;
@@ -87,4 +90,50 @@ public class Artist
     {
         return cover;
     }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i)
+    {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeStringArray(genres);
+        parcel.writeInt(tracksCount);
+        parcel.writeInt(albumsCount);
+        parcel.writeString(webCite);
+        parcel.writeString(description);
+        parcel.writeParcelable(cover, i);
+    }
+
+    private Artist(Parcel source)
+    {
+        id = source.readString();
+        name = source.readString();
+        genres = source.createStringArray();
+        tracksCount = source.readInt();
+        albumsCount = source.readInt();
+        webCite = source.readString();
+        description = source.readString();
+        cover = source.readParcelable(Cover.class.getClassLoader());
+    }
+
+    public static final Creator<Artist> CREATOR = new Creator<Artist>()
+    {
+        @Override
+        public Artist createFromParcel(Parcel parcel)
+        {
+            return new Artist(parcel);
+        }
+
+        @Override
+        public Artist[] newArray(int i)
+        {
+            return new Artist[i];
+        }
+    };
 }
