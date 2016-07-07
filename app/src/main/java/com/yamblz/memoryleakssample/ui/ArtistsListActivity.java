@@ -16,6 +16,8 @@ import com.yamblz.memoryleakssample.SampleApplication;
 import com.yamblz.memoryleakssample.communication.Api;
 import com.yamblz.memoryleakssample.model.Artist;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -30,6 +32,7 @@ public class ArtistsListActivity extends AppCompatActivity
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
     private Api api;
+    private ArtistsLoadingTask artistsLoadingTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,28 +54,8 @@ public class ArtistsListActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        new AsyncTask<Api, Void, Artist[]>()
-        {
-            @Override
-            protected void onPreExecute()
-            {
-                super.onPreExecute();
-                showProgress();
-            }
-
-            @Override
-            protected Artist[] doInBackground(Api... apis)
-            {
-                return apis[0].getArtists();
-            }
-
-            @Override
-            protected void onPostExecute(Artist[] artists)
-            {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute(api);
+        artistsLoadingTask = new ArtistsLoadingTask(this);
+        artistsLoadingTask.execute(api);
     }
 
     @Override
@@ -82,6 +65,16 @@ public class ArtistsListActivity extends AppCompatActivity
         int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
         Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
         ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
+        resetArtistsLoadingTask();
+    }
+
+    private void resetArtistsLoadingTask()
+    {
+        if (artistsLoadingTask != null)
+        {
+            artistsLoadingTask.cancel(false);
+        }
+        artistsLoadingTask = null;
     }
 
     private void showProgress()
@@ -127,5 +120,48 @@ public class ArtistsListActivity extends AppCompatActivity
     {
         ArtistDetailsActivity.artist = artist;
         startActivity(new Intent(this, ArtistDetailsActivity.class));
+    }
+
+    private static class ArtistsLoadingTask extends AsyncTask<Api, Void, Artist[]>
+    {
+        final WeakReference<ArtistsListActivity> weakActivity;
+
+        private ArtistsLoadingTask(@NonNull ArtistsListActivity activity)
+        {
+            this.weakActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            ArtistsListActivity activity = weakActivity.get();
+            if (activity != null)
+            {
+                activity.showProgress();
+            }
+            else
+            {
+                cancel(false);
+            }
+        }
+
+        @Override
+        protected Artist[] doInBackground(Api... apis)
+        {
+            return apis[0].getArtists();
+        }
+
+        @Override
+        protected void onPostExecute(Artist[] artists)
+        {
+            super.onPostExecute(artists);
+            ArtistsListActivity activity = weakActivity.get();
+            if (activity != null)
+            {
+                activity.showContent(artists);
+                activity.artistsLoadingTask = null;
+            }
+        }
     }
 }
