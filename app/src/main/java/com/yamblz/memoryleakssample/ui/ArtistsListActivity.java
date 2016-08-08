@@ -1,25 +1,34 @@
 package com.yamblz.memoryleakssample.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.SampleApplication;
+import com.yamblz.memoryleakssample.communication.Api;
 import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistsListActivity extends AppCompatActivity
+public class ArtistsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Artist[]>
 {
+    private static final int ARTISTS_LOADER_ID = 101;
+    private static final String ARTISTS_STATE_KEY = "visible_position_state";
+
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -28,56 +37,39 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+    private Parcelable listState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artisits_list);
-        getWindow().setBackgroundDrawableResource(R.drawable.window_background);
+        getWindow().setBackgroundDrawable(null);
 
         ButterKnife.bind(this);
 
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
+        showProgress();
+        getSupportLoaderManager().initLoader(
+                ARTISTS_LOADER_ID,
+                null,
+                this).forceLoad();
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
-            @Override
-            protected void onPreExecute()
-            {
-                super.onPreExecute();
-                showProgress();
-            }
-
-            @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
-                return SampleApplication.getApi().getArtists();
-            }
-
-            @Override
-            protected void onPostExecute(Artist[] artists)
-            {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        listState = gridLayoutManager.onSaveInstanceState();
+        outState.putParcelable(ARTISTS_STATE_KEY, listState);
     }
 
     @Override
-    protected void onPause()
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
-        super.onPause();
-        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-        ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
+        super.onRestoreInstanceState(savedInstanceState);
+        listState = savedInstanceState.getParcelable(ARTISTS_STATE_KEY);
     }
 
     private void showProgress()
@@ -103,25 +95,33 @@ public class ArtistsListActivity extends AppCompatActivity
                                                 }
                                             });
         recyclerView.setAdapter(artistsAdapter);
-        artistsAdapter.notifyDataSetChanged();
 
-        Artist firstVisibleArtist = ((SampleApplication)getApplication()).getFirstVisibleArtistInListActivity();
-        if (firstVisibleArtist != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                if (data[i].getId().equals(firstVisibleArtist.getId()))
-                {
-                    recyclerView.scrollToPosition(i);
-                    break;
-                }
-            }
-        }
+        artistsAdapter.notifyDataSetChanged();
+        gridLayoutManager.onRestoreInstanceState(listState);
+
     }
 
     private void showArtistDetails(@NonNull Artist artist)
     {
         ArtistDetailsActivity.artist = artist;
         startActivity(new Intent(this, ArtistDetailsActivity.class));
+    }
+
+    @Override
+    public Loader<Artist[]> onCreateLoader(int id, Bundle args)
+    {
+        return new ArtistsLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Artist[]> loader, Artist[] data)
+    {
+        showContent(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Artist[]> loader)
+    {
+
     }
 }

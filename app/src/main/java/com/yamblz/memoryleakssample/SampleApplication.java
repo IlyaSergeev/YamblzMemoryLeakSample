@@ -10,29 +10,9 @@ import com.yamblz.memoryleakssample.model.Artist;
  */
 public class SampleApplication extends Application
 {
-    private static Api api;
-
-    Artist firstVisibleArtistInListActivity = null;
-
-    public static Api getApi()
-    {
-        return api;
-    }
-
-    public Artist getFirstVisibleArtistInListActivity()
-    {
-        return firstVisibleArtistInListActivity;
-    }
-
-    public void setFirstVisibleArtistInListActivity(Artist firstVisibleArtistInListActivity)
-    {
-        this.firstVisibleArtistInListActivity = firstVisibleArtistInListActivity;
-    }
-
     @Override
     public void onCreate()
     {
         super.onCreate();
-        api = new Api(this);
     }
 }
