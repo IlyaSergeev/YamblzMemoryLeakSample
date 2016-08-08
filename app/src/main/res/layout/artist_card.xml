@@ -15,12 +15,6 @@
         android:src="@android:color/holo_red_dark"
         tools:ignore="ContentDescription"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/fade_shadow"/>
-
     <TextView
         android:id="@+id/artist_name"
         android:layout_width="wrap_content"
