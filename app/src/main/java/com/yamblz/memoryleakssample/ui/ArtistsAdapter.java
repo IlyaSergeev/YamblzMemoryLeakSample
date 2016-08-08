@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
@@ -34,6 +35,8 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     @NonNull
     private final ArtistsAdapterListener listener;
 
+    private Transformation shadowTransformation;
+
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
                           @NonNull Resources resources,
@@ -52,12 +55,18 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
             listener = ArtistsAdapterListener.NULL;
         }
         this.listener = listener;
+        this.shadowTransformation = new ShadowTransformation();
     }
 
     @NonNull
     public Artist getArtist(int position)
     {
         return artists[position];
+    }
+
+    public Artist[] getArtists()
+    {
+        return artists;
     }
 
     @Override
@@ -113,7 +122,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         public void bind(@NonNull Artist artist)
         {
             this.artist = artist;
-            picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
+            picasso.load(artist.getCover().getSmallImageUrl()).transform(shadowTransformation).into(posterImageView);
             nameTextView.setText(artist.getName());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
                                                                artist.getAlbumsCount(),
