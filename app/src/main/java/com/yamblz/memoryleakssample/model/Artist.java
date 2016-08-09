@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName;
  * Created by i-sergeev on 01.07.16
  */
 public class Artist implements Parcelable {
+    public static final String KEY = "com.yamblz.memoryleakssample.model.artist";
+
     @SerializedName("id")
     private final String id;
 
