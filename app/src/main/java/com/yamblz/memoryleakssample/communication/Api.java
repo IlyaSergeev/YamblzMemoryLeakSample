@@ -22,19 +22,19 @@ public class Api
 
     public Api(@NonNull Context context)
     {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     public Artist[] getArtists() {
 
-//        try
-//        {
-//            Thread.sleep(3000);
-//        }
-//        catch (InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
+        try
+        {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
         InputStream inStream = context.getResources().openRawResource(R.raw.artists);
         InputStreamReader inStreamReader = new InputStreamReader(inStream);
