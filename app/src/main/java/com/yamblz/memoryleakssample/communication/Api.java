@@ -7,38 +7,38 @@ import com.google.gson.Gson;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class Api
-{
+public class Api {
     @NonNull
     private final Context context;
     private final Gson gson = new Gson();
 
 
-    public Api(@NonNull Context context)
-    {
+    public Api(@NonNull Context context) {
         this.context = context;
     }
 
     public Artist[] getArtists() {
-
-//        try
-//        {
-//            Thread.sleep(3000);
-//        }
-//        catch (InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
-
+        Artist[] artists = null;
         InputStream inStream = context.getResources().openRawResource(R.raw.artists);
         InputStreamReader inStreamReader = new InputStreamReader(inStream);
 
-        return gson.fromJson(inStreamReader, Artist[].class);
+        try {
+            artists = gson.fromJson(inStreamReader, Artist[].class);
+        } finally {
+            try {
+                inStreamReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return artists;
     }
 }

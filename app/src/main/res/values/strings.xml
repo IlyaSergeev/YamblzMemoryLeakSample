@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Memory Leaks Sample</string>
+    <string name="artist">artist</string>
 </resources>

@@ -3,6 +3,7 @@ package com.yamblz.memoryleakssample.ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,8 +19,8 @@ import com.yamblz.memoryleakssample.model.Artist;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistsListActivity extends AppCompatActivity
-{
+public class ArtistsListActivity extends AppCompatActivity {
+    private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -28,13 +29,12 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+    private Parcelable layoutManagerState;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artisits_list);
-        getWindow().setBackgroundDrawableResource(R.drawable.window_background);
+        setContentView(R.layout.activity_artists_list);
 
         ButterKnife.bind(this);
 
@@ -44,84 +44,73 @@ public class ArtistsListActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
+
+        if (layoutManagerState != null) {
+            gridLayoutManager.onRestoreInstanceState(layoutManagerState);
+        }
+
+        new AsyncTask<Void, Void, Artist[]>() {
             @Override
-            protected void onPreExecute()
-            {
+            protected void onPreExecute() {
                 super.onPreExecute();
                 showProgress();
             }
 
             @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
+            protected Artist[] doInBackground(Void... voids) {
                 return SampleApplication.getApi().getArtists();
             }
 
             @Override
-            protected void onPostExecute(Artist[] artists)
-            {
+            protected void onPostExecute(Artist[] artists) {
                 super.onPostExecute(artists);
                 showContent(artists);
             }
         }.execute();
     }
 
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-        ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
-    }
-
-    private void showProgress()
-    {
+    private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
     }
 
-    private void showContent(Artist[] data)
-    {
+    private void showContent(Artist[] data) {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
         artistsAdapter = new ArtistsAdapter(data,
-                                            Picasso.with(this),
-                                            getResources(),
-                                            new ArtistsAdapter.ArtistsAdapterListener()
-                                            {
-                                                @Override
-                                                public void onClickArtist(@NonNull Artist artist)
-                                                {
-                                                    showArtistDetails(artist);
-                                                }
-                                            });
+                Picasso.with(this),
+                getResources(),
+                new ArtistsAdapter.ArtistsAdapterListener() {
+                    @Override
+                    public void onClickArtist(@NonNull Artist artist) {
+                        showArtistDetails(artist);
+                    }
+                });
         recyclerView.setAdapter(artistsAdapter);
-        artistsAdapter.notifyDataSetChanged();
-
-        Artist firstVisibleArtist = ((SampleApplication)getApplication()).getFirstVisibleArtistInListActivity();
-        if (firstVisibleArtist != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                if (data[i].getId().equals(firstVisibleArtist.getId()))
-                {
-                    recyclerView.scrollToPosition(i);
-                    break;
-                }
-            }
-        }
     }
 
-    private void showArtistDetails(@NonNull Artist artist)
-    {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+    private void showArtistDetails(@NonNull Artist artist) {
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra(getString(R.string.artist), artist);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        layoutManagerState = gridLayoutManager.onSaveInstanceState();
+        outState.putParcelable(LAYOUT_MANAGER_STATE, layoutManagerState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            layoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE);
+        }
     }
 }
