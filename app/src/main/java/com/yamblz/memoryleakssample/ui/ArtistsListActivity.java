@@ -25,9 +25,6 @@ public class ArtistsListActivity extends AppCompatActivity {
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
 
-    private GridLayoutManager gridLayoutManager;
-    private ArtistsAdapter artistsAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +33,7 @@ public class ArtistsListActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        gridLayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
         new AsyncTask<Void, Void, Artist[]>() {
@@ -48,7 +45,7 @@ public class ArtistsListActivity extends AppCompatActivity {
 
             @Override
             protected Artist[] doInBackground(Void... voids) {
-                return SampleApplication.getApi().getArtists();
+                return ((SampleApplication) getApplication()).getApi().getArtists();
             }
 
             @Override
@@ -74,7 +71,7 @@ public class ArtistsListActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        artistsAdapter = new ArtistsAdapter(data,
+        ArtistsAdapter artistsAdapter = new ArtistsAdapter(data,
                 Picasso.with(this),
                 getResources(),
                 new ArtistsAdapter.ArtistsAdapterListener() {

@@ -8,9 +8,9 @@ import com.yamblz.memoryleakssample.communication.Api;
  * Created by i-sergeev on 07.07.16
  */
 public class SampleApplication extends Application {
-    private static Api api;
+    private Api api;
 
-    public static Api getApi() {
+    public Api getApi() {
         return api;
     }
 
