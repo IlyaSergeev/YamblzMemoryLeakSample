@@ -78,7 +78,7 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
     private void showContent() {
         hideProgress();
         ArtistsAdapter artistsAdapter = new ArtistsAdapter(artists,
-                Picasso.with(context),
+                Picasso.with(getActivity()),
                 resources,
                 this::showArtistDetails);
 
