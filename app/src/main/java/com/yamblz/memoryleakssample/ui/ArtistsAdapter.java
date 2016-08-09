@@ -31,26 +31,24 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     @NonNull
     private final Resources resources;
 
-    @NonNull
+    @Nullable
     private final ArtistsAdapterListener listener;
+
+    private static final Artist[] EMPTY_ARRAY = new Artist[0];
 
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
                           @NonNull Resources resources,
-                          ArtistsAdapterListener listener)
+                          @Nullable ArtistsAdapterListener listener)
     {
         this.picasso = picasso;
         this.resources = resources;
         if (artists == null)
         {
-            artists = new Artist[0];
+            artists = EMPTY_ARRAY;
         }
         this.artists = artists;
 
-        if (listener == null)
-        {
-            listener = ArtistsAdapterListener.NULL;
-        }
         this.listener = listener;
     }
 
@@ -105,7 +103,10 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
                 @Override
                 public void onClick(View view)
                 {
-                    listener.onClickArtist(artist);
+                    if(listener != null)
+                    {
+                        listener.onClickArtist(artist);
+                    }
                 }
             });
         }
@@ -127,14 +128,5 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     public interface ArtistsAdapterListener
     {
         void onClickArtist(@NonNull Artist artist);
-
-        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
-        {
-            @Override
-            public void onClickArtist(@NonNull Artist artist)
-            {
-
-            }
-        };
     }
 }
