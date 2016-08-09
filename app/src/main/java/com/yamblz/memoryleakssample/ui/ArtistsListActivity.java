@@ -1,22 +1,29 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
-import com.yamblz.memoryleakssample.SampleApplication;
+import com.yamblz.memoryleakssample.communication.Api;
 import com.yamblz.memoryleakssample.model.Artist;
+
+import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class ArtistsListActivity extends AppCompatActivity
 {
@@ -28,6 +35,9 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+
+    private Subscription subscription;
+    private Artist[] artists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,43 +51,49 @@ public class ArtistsListActivity extends AppCompatActivity
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
+
+        if (getLastCustomNonConfigurationInstance() == null) {
+            showProgress();
+            subscription = Observable.fromCallable(new Callable<Artist[]>() {
+                @Override
+                public Artist[] call() throws Exception {
+                    return new Api(ArtistsListActivity.this).getArtists();
+                }
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Artist[]>() {
+                        @Override
+                        public void call(Artist[] artists) {
+                            subscription = null;
+                            ArtistsListActivity.this.artists = artists;
+                            showContent(artists);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            subscription = null;
+                            Log.d(ArtistsListActivity.class.getSimpleName(),
+                                    "error during data loading");
+                        }
+                    });
+        } else {
+            artists = (Artist[]) getLastCustomNonConfigurationInstance();
+            showContent(artists);
+        }
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
-            @Override
-            protected void onPreExecute()
-            {
-                super.onPreExecute();
-                showProgress();
-            }
-
-            @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
-                return SampleApplication.getApi().getArtists();
-            }
-
-            @Override
-            protected void onPostExecute(Artist[] artists)
-            {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute();
+    public Object onRetainCustomNonConfigurationInstance() {
+        return artists;
     }
 
     @Override
-    protected void onPause()
-    {
-        super.onPause();
-        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-        ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
+    protected void onDestroy() {
+        if (subscription != null) {
+            subscription = null;
+        }
+        super.onDestroy();
     }
 
     private void showProgress()
@@ -104,19 +120,6 @@ public class ArtistsListActivity extends AppCompatActivity
                                             });
         recyclerView.setAdapter(artistsAdapter);
         artistsAdapter.notifyDataSetChanged();
-
-        Artist firstVisibleArtist = ((SampleApplication)getApplication()).getFirstVisibleArtistInListActivity();
-        if (firstVisibleArtist != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                if (data[i].getId().equals(firstVisibleArtist.getId()))
-                {
-                    recyclerView.scrollToPosition(i);
-                    break;
-                }
-            }
-        }
     }
 
     private void showArtistDetails(@NonNull Artist artist)
