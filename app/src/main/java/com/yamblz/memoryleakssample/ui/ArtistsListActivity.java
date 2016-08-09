@@ -14,9 +14,13 @@ import com.squareup.picasso.Picasso;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.SampleApplication;
 import com.yamblz.memoryleakssample.model.Artist;
+import com.yamblz.memoryleakssample.util.asynctask.GettingArtistsAsyncTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import icepick.Icepick;
+import icepick.State;
 
 public class ArtistsListActivity extends AppCompatActivity
 {
@@ -26,8 +30,14 @@ public class ArtistsListActivity extends AppCompatActivity
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
 
+    private Unbinder unbinder;
+
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+
+    private AsyncTask<Void, Void, Artist[]> gettingArtistTask;
+
+    @State Artist[] artists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,7 +46,9 @@ public class ArtistsListActivity extends AppCompatActivity
         setContentView(R.layout.activity_artisits_list);
         getWindow().setBackgroundDrawableResource(R.drawable.window_background);
 
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
+
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -47,28 +59,13 @@ public class ArtistsListActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
-            @Override
-            protected void onPreExecute()
-            {
-                super.onPreExecute();
-                showProgress();
-            }
 
-            @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
-                return SampleApplication.getApi().getArtists();
-            }
-
-            @Override
-            protected void onPostExecute(Artist[] artists)
-            {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute();
+        if(artists == null) {
+            gettingArtistTask = new GettingArtistsAsyncTask(this::showProgress, this::showContent);
+            gettingArtistTask.execute();
+        } else {
+            showContent(artists);
+        }
     }
 
     @Override
@@ -78,6 +75,22 @@ public class ArtistsListActivity extends AppCompatActivity
         int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
         Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
         ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
+
+        if(gettingArtistTask != null) {
+            gettingArtistTask.cancel(true);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     private void showProgress()
@@ -94,14 +107,7 @@ public class ArtistsListActivity extends AppCompatActivity
         artistsAdapter = new ArtistsAdapter(data,
                                             Picasso.with(this),
                                             getResources(),
-                                            new ArtistsAdapter.ArtistsAdapterListener()
-                                            {
-                                                @Override
-                                                public void onClickArtist(@NonNull Artist artist)
-                                                {
-                                                    showArtistDetails(artist);
-                                                }
-                                            });
+                                            (artist) -> showArtistDetails(artist));
         recyclerView.setAdapter(artistsAdapter);
         artistsAdapter.notifyDataSetChanged();
 
@@ -121,7 +127,8 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private void showArtistDetails(@NonNull Artist artist)
     {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra(artist.getClass().getCanonicalName(), artist);
+        startActivity(intent);
     }
 }

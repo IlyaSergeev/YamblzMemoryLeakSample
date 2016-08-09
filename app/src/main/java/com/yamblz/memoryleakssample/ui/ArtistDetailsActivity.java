@@ -1,6 +1,7 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -12,6 +13,9 @@ import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import icepick.Icepick;
+import icepick.State;
 
 public class ArtistDetailsActivity extends AppCompatActivity
 {
@@ -30,15 +34,20 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
+    @State Artist artist;
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_details);
-        ButterKnife.bind(this);
-        clearViews();
+        unbinder = ButterKnife.bind(this);
+
+        artist = (Artist) getIntent().getExtras().getSerializable(Artist.class.getCanonicalName());
+
+        Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
@@ -49,19 +58,12 @@ public class ArtistDetailsActivity extends AppCompatActivity
         {
             updateArtistView(artist);
         }
-        else
-        {
-            clearViews();
-        }
     }
 
-    private void clearViews()
-    {
-        posterImageView.setImageResource(android.R.color.white);
-        nameTextView.setText("");
-        albumsTextView.setText("");
-        tracksTextView.setText("");
-        descriptionTextView.setText("");
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 
     private void updateArtistView(@NonNull Artist artist)
@@ -75,5 +77,11 @@ public class ArtistDetailsActivity extends AppCompatActivity
                                                                 artist.getTracksCount(),
                                                                 artist.getTracksCount()));
         descriptionTextView.setText(artist.getDescription());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 }
