@@ -2,12 +2,13 @@ package com.yamblz.memoryleakssample.communication;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -15,10 +16,8 @@ import java.io.InputStreamReader;
  */
 public class Api
 {
-    @NonNull
-    private final Context context;
     private final Gson gson = new Gson();
-
+    private Context context;
 
     public Api(@NonNull Context context)
     {
@@ -27,18 +26,21 @@ public class Api
 
     public Artist[] getArtists() {
 
-//        try
-//        {
-//            Thread.sleep(3000);
-//        }
-//        catch (InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        InputStream inStream = context.getResources().openRawResource(R.raw.artists);
-        InputStreamReader inStreamReader = new InputStreamReader(inStream);
-
-        return gson.fromJson(inStreamReader, Artist[].class);
+        InputStreamReader inStreamReader = new InputStreamReader(
+                    context.getResources().openRawResource(R.raw.artists));
+        context = null;
+        Artist[] artists = gson.fromJson(inStreamReader, Artist[].class);
+        try {
+            inStreamReader.close();
+        } catch (IOException e) {
+            Log.d(this.getClass().getSimpleName(), "error during close", e);
+        }
+        return artists;
     }
 }

@@ -80,6 +80,17 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         return artists.length;
     }
 
+    interface ArtistsAdapterListener {
+        ArtistsAdapterListener NULL = new ArtistsAdapterListener() {
+            @Override
+            public void onClickArtist(@NonNull Artist artist) {
+
+            }
+        };
+
+        void onClickArtist(@NonNull Artist artist);
+    }
+
     public class ArtistVH extends RecyclerView.ViewHolder
     {
         @BindView(R.id.artist_poster)
@@ -122,19 +133,5 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
                                                               artist.getTracksCount(),
                                                               artist.getTracksCount()));
         }
-    }
-
-    public interface ArtistsAdapterListener
-    {
-        void onClickArtist(@NonNull Artist artist);
-
-        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
-        {
-            @Override
-            public void onClickArtist(@NonNull Artist artist)
-            {
-
-            }
-        };
     }
 }
