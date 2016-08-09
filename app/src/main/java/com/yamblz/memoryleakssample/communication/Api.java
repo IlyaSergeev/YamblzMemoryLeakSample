@@ -18,6 +18,7 @@ public class Api {
     @NonNull
     private final Context context;
     private final Gson gson = new Gson();
+    private Artist[] artists;
 
 
     public Api(@NonNull Context context) {
@@ -25,14 +26,20 @@ public class Api {
     }
 
     public Artist[] getArtists() {
-        InputStream inStream = context.getResources().openRawResource(R.raw.artists);
-        InputStreamReader inStreamReader = new InputStreamReader(inStream);
-        Artist[] artists= gson.fromJson(inStreamReader, Artist[].class);
-        try {
-            inStreamReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(artists==null){
+            InputStream inStream = context.getResources().openRawResource(R.raw.artists);
+            InputStreamReader inStreamReader = new InputStreamReader(inStream);
+            artists= gson.fromJson(inStreamReader, Artist[].class);
+            try {
+                inStreamReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return artists;
+    }
+
+    public boolean isArtistLoad(){
+        return artists!=null;
     }
 }

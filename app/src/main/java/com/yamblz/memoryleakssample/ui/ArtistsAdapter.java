@@ -21,22 +21,15 @@ import butterknife.ButterKnife;
  * Created by i-sergeev on 01.07.16
  */
 public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH> {
-    @NonNull
-    private final Artist[] artists;
-
-    @NonNull
-    private final Picasso picasso;
-
-    @NonNull
-    private final Resources resources;
-
-    @NonNull
-    private final ArtistsAdapterListener listener;
+    @NonNull private final Artist[] artists;
+    @NonNull private final Picasso picasso;
+    @NonNull private final Resources resources;
+    @NonNull private final ArtistsAdapterListener listener;
 
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
                           @NonNull Resources resources,
-                          ArtistsAdapterListener listener) {
+                          @NonNull ArtistsAdapterListener listener) {
         this.picasso = picasso;
         this.resources = resources;
         if (artists == null) {
@@ -60,7 +53,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
 
     @Override
     public void onBindViewHolder(ArtistVH holder, int position) {
-        holder.bind(artists[position],position);
+        holder.bind(artists[position], position);
     }
 
     @Override
@@ -83,7 +76,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onClickArtist(artist,id);
+                    listener.onClickArtist(artist, id);
                 }
             });
             picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
@@ -98,7 +91,6 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     }
 
     public interface ArtistsAdapterListener {
-        //todo
-        void onClickArtist(@NonNull Artist artist,int id);
+        void onClickArtist(@NonNull Artist artist, int id);
     }
 }
