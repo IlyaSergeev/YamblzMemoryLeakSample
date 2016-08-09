@@ -3,7 +3,6 @@ package com.yamblz.memoryleakssample.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -37,6 +36,7 @@ public class ArtistsListActivity extends AppCompatActivity implements LoaderMana
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
     private Resources resources;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +73,6 @@ public class ArtistsListActivity extends AppCompatActivity implements LoaderMana
         ((SampleApplication) getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
     }
 
-    private void showProgress() {
-        progressBar.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
-    }
-
-    private void hideProgress() {
-        progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
-    }
 
     private void showContent(Artist[] data) {
         hideProgress();
@@ -89,12 +80,8 @@ public class ArtistsListActivity extends AppCompatActivity implements LoaderMana
         artistsAdapter = new ArtistsAdapter(data,
                 Picasso.with(this),
                 resources,
-                new ArtistsAdapter.ArtistsAdapterListener() {
-                    @Override
-                    public void onClickArtist(@NonNull Artist artist) {
-                        showArtistDetails(artist);
-                    }
-                });
+                this::showArtistDetails);
+
         recyclerView.setAdapter(artistsAdapter);
 
         Artist firstVisibleArtist = ((SampleApplication) getApplication()).getFirstVisibleArtistInListActivity();
@@ -137,4 +124,15 @@ public class ArtistsListActivity extends AppCompatActivity implements LoaderMana
     public void onLoaderReset(Loader<Artist[]> loader) {
 
     }
+
+    private void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    private void hideProgress() {
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
 }

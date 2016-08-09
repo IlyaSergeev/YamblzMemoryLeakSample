@@ -36,7 +36,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
                           @NonNull Resources resources,
-                          ArtistsAdapterListener listener) {
+                          @NonNull ArtistsAdapterListener listener) {
         this.picasso = picasso;
         this.resources = resources;
         if (artists == null) {
@@ -53,8 +53,8 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
 
     @Override
     public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.artist_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                         .inflate(R.layout.artist_card, parent, false);
         return new ArtistVH(view);
     }
 
@@ -86,12 +86,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         public ArtistVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onClickArtist(artist);
-                }
-            });
+            itemView.setOnClickListener(view -> listener.onClickArtist(artist));
         }
 
         public void bind(@NonNull Artist artist) {
