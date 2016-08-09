@@ -2,10 +2,12 @@ package com.yamblz.memoryleakssample.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class Artist
+public class Artist implements Serializable
 {
     @SerializedName("id")
     private final String id;

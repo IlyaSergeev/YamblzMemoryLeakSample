@@ -16,6 +16,7 @@ import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by i-sergeev on 01.07.16
@@ -72,6 +73,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     public void onBindViewHolder(ArtistVH holder, int position)
     {
         holder.bind(artists[position]);
+        holder.itemView.setOnClickListener((view) -> listener.onClickArtist(artists[position]));
     }
 
     @Override
@@ -94,25 +96,14 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         @BindView(R.id.artist_tracks)
         TextView songsTextView;
 
-        private Artist artist;
-
         public ArtistVH(View itemView)
         {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
-                {
-                    listener.onClickArtist(artist);
-                }
-            });
         }
 
         public void bind(@NonNull Artist artist)
         {
-            this.artist = artist;
             picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
             nameTextView.setText(artist.getName());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
@@ -122,19 +113,13 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
                                                               artist.getTracksCount(),
                                                               artist.getTracksCount()));
         }
+
     }
 
     public interface ArtistsAdapterListener
     {
+        ArtistsAdapterListener NULL = (artist) -> {};
+
         void onClickArtist(@NonNull Artist artist);
-
-        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
-        {
-            @Override
-            public void onClickArtist(@NonNull Artist artist)
-            {
-
-            }
-        };
     }
 }
