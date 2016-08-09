@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -26,19 +27,21 @@ public class Api
     }
 
     public Artist[] getArtists() {
+        InputStreamReader inStreamReader = null;
+        try{
+            InputStream inStream = context.getResources().openRawResource(R.raw.artists);
+            inStreamReader = new InputStreamReader(inStream);
+            return gson.fromJson(inStreamReader, Artist[].class);
+        }finally {
+            try {
+                inStreamReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-//        try
-//        {
-//            Thread.sleep(3000);
-//        }
-//        catch (InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
 
-        InputStream inStream = context.getResources().openRawResource(R.raw.artists);
-        InputStreamReader inStreamReader = new InputStreamReader(inStream);
 
-        return gson.fromJson(inStreamReader, Artist[].class);
+
     }
 }

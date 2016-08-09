@@ -4,7 +4,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="128dp"
                 android:layout_gravity="center"
-                android:background="@android:color/white"
                 android:layoutDirection="ltr"
                 tools:ignore="UnusedAttribute,HardcodedText,RtlHardcoded">
 
@@ -15,12 +14,6 @@
         android:scaleType="centerCrop"
         android:src="@android:color/holo_red_dark"
         tools:ignore="ContentDescription"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/fade_shadow"/>
 
     <TextView
         android:id="@+id/artist_name"
