@@ -1,12 +1,11 @@
 package com.yamblz.memoryleakssample.ui;
 
+import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.yamblz.memoryleakssample.ArtistsLoader;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
@@ -42,10 +40,6 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         }
         this.artists = artists;
 
-
-        if (listener == null) {
-            listener = ArtistsAdapterListener.NULL;
-        }
         this.listener = listener;
     }
 
@@ -58,17 +52,17 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.artist_card, parent, false);
-        final RecyclerView.ViewHolder h = new ArtistVH(view);
+        final ArtistVH h = new ArtistVH(view);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int adapterPos = h.getAdapterPosition();
                 if (adapterPos != RecyclerView.NO_POSITION) {
-                    listener.onClickArtist(getArtist(adapterPos));
+                    listener.onClickArtist(artists.get(adapterPos));
                 }
             }
         });
-        return new ArtistVH(view);
+        return h;
     }
 
 

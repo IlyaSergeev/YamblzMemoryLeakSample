@@ -8,7 +8,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -66,9 +65,10 @@ public class ArtistsListActivity extends AppCompatActivity implements LoaderMana
         artistsAdapter.setDataset(data);
     }
 
-    private void showArtistDetails(@NonNull Artist artist) {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+    public void showArtistDetails(@NonNull Artist artist) {
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra(ArtistDetailsActivity.ARTIST_EXTRA, artist);
+        startActivity(intent);
     }
 
     @Override

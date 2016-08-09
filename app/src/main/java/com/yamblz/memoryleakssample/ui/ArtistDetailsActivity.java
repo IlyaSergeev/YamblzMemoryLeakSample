@@ -1,5 +1,6 @@
 package com.yamblz.memoryleakssample.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,9 @@ import com.yamblz.memoryleakssample.model.Artist;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistDetailsActivity extends AppCompatActivity
-{
+public class ArtistDetailsActivity extends AppCompatActivity {
+    public static final String ARTIST_EXTRA = "artist";
+
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
 
@@ -30,33 +32,36 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
+    private Artist artist;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
-        clearViews();
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            artist = intent.getParcelableExtra(ARTIST_EXTRA);
+        }
+        if (artist == null) {
+            clearViews();
+        } else {
+            updateArtistView(artist);
+        }
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        if (artist != null)
-        {
+        if (artist != null) {
             updateArtistView(artist);
-        }
-        else
-        {
+        } else {
             clearViews();
         }
     }
 
-    private void clearViews()
-    {
+    private void clearViews() {
         posterImageView.setImageResource(android.R.color.white);
         nameTextView.setText("");
         albumsTextView.setText("");
@@ -64,16 +69,28 @@ public class ArtistDetailsActivity extends AppCompatActivity
         descriptionTextView.setText("");
     }
 
-    private void updateArtistView(@NonNull Artist artist)
-    {
+    private void updateArtistView(@NonNull Artist artist) {
+
         Picasso.with(this).load(artist.getCover().getBigImageUrl()).into(posterImageView);
         nameTextView.setText(artist.getName());
         albumsTextView.setText(getResources().getQuantityString(R.plurals.artistAlbums,
-                                                                artist.getAlbumsCount(),
-                                                                artist.getAlbumsCount()));
+                artist.getAlbumsCount(),
+                artist.getAlbumsCount()));
         tracksTextView.setText(getResources().getQuantityString(R.plurals.artistTracks,
-                                                                artist.getTracksCount(),
-                                                                artist.getTracksCount()));
+                artist.getTracksCount(),
+                artist.getTracksCount()));
         descriptionTextView.setText(artist.getDescription());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ARTIST_EXTRA, artist);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        artist = savedInstanceState.getParcelable(ARTIST_EXTRA);
     }
 }

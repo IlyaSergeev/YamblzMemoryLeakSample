@@ -43,6 +43,10 @@ public class ArtistsLoader extends AsyncTaskLoader<List<Artist>> {
 
         try {
             reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
             inStream.close();
         } catch (IOException e) {
             e.printStackTrace();
