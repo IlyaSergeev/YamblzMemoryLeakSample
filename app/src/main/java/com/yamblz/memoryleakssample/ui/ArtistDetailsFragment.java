@@ -3,7 +3,11 @@ package com.yamblz.memoryleakssample.ui;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,9 +18,9 @@ import com.yamblz.memoryleakssample.model.Artist;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistDetailsActivity extends AppCompatActivity {
-    public static final String EXTRA_ARTIST =
-            "com.yamblz.memoryleakssample.ui.ArtistDetailsActivity.EXTRA_ARTIST";
+public class ArtistDetailsFragment extends Fragment {
+    public static final String ARGUMENT_ARTIST =
+            "com.yamblz.memoryleakssample.ui.ArtistDetailsActivity.ARGUMENT_ARTIST";
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
 
@@ -33,17 +37,22 @@ public class ArtistDetailsActivity extends AppCompatActivity {
     TextView descriptionTextView;
 
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist_details);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_artist_details, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
 
-        Bundle extras = getIntent().getExtras();
-        if(extras != null && extras.containsKey(EXTRA_ARTIST)){
-            Artist artist = (Artist) extras.getSerializable(EXTRA_ARTIST);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey(ARGUMENT_ARTIST)) {
+            Artist artist = (Artist) arguments.getSerializable(ARGUMENT_ARTIST);
 
-            if(artist!=null){
+            if (artist != null) {
                 updateArtistView(artist);
             }
         }
@@ -51,7 +60,7 @@ public class ArtistDetailsActivity extends AppCompatActivity {
 
     private void updateArtistView(@NonNull Artist artist) {
         Resources resources = getResources();
-        Picasso.with(this).load(artist.getCover().getBigImageUrl()).into(posterImageView);
+        Picasso.with(getContext()).load(artist.getCover().getBigImageUrl()).into(posterImageView);
         nameTextView.setText(artist.getName());
         int albumsCount = artist.getAlbumsCount();
         int tracksCount = artist.getTracksCount();
