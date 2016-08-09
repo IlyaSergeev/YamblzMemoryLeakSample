@@ -2,37 +2,28 @@ package com.yamblz.memoryleakssample;
 
 import android.app.Application;
 
-import com.yamblz.memoryleakssample.communication.Api;
-import com.yamblz.memoryleakssample.model.Artist;
+import com.squareup.leakcanary.LeakCanary;
+import com.yamblz.memoryleakssample.di.AppComponent;
+import com.yamblz.memoryleakssample.di.AppModule;
+import com.yamblz.memoryleakssample.di.DaggerAppComponent;
 
 /**
  * Created by i-sergeev on 07.07.16
  */
-public class SampleApplication extends Application
-{
-    private static Api api;
+public class SampleApplication extends Application {
 
-    Artist firstVisibleArtistInListActivity = null;
-
-    public static Api getApi()
-    {
-        return api;
-    }
-
-    public Artist getFirstVisibleArtistInListActivity()
-    {
-        return firstVisibleArtistInListActivity;
-    }
-
-    public void setFirstVisibleArtistInListActivity(Artist firstVisibleArtistInListActivity)
-    {
-        this.firstVisibleArtistInListActivity = firstVisibleArtistInListActivity;
-    }
+    private AppComponent component;
 
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
-        api = new Api(this);
+        LeakCanary.install(this);
+        component = DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
+    }
+
+    public AppComponent component() {
+        return component;
     }
 }
