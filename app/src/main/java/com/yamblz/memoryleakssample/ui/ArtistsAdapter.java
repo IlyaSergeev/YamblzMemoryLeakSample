@@ -20,8 +20,7 @@ import butterknife.ButterKnife;
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH>
-{
+public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH> {
     @NonNull
     private final Artist[] artists;
 
@@ -37,104 +36,69 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     public ArtistsAdapter(@Nullable Artist[] artists,
                           @NonNull Picasso picasso,
                           @NonNull Resources resources,
-                          ArtistsAdapterListener listener)
-    {
+                          ArtistsAdapterListener listener) {
         this.picasso = picasso;
         this.resources = resources;
-        if (artists == null)
-        {
+        if (artists == null) {
             artists = new Artist[0];
         }
         this.artists = artists;
-
-        if (listener == null)
-        {
-            listener = ArtistsAdapterListener.NULL;
-        }
         this.listener = listener;
     }
 
     @NonNull
-    public Artist getArtist(int position)
-    {
+    public Artist getArtist(int position) {
         return artists[position];
     }
 
     @Override
-    public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.artist_card, parent, false);
         return new ArtistVH(view);
     }
 
     @Override
-    public void onBindViewHolder(ArtistVH holder, int position)
-    {
-        holder.bind(artists[position]);
+    public void onBindViewHolder(ArtistVH holder, int position) {
+        holder.bind(artists[position],position);
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return artists.length;
     }
 
-    public class ArtistVH extends RecyclerView.ViewHolder
-    {
-        @BindView(R.id.artist_poster)
-        ImageView posterImageView;
+    public class ArtistVH extends RecyclerView.ViewHolder {
+        @BindView(R.id.artist_poster) ImageView posterImageView;
+        @BindView(R.id.artist_name) TextView nameTextView;
+        @BindView(R.id.artist_albums) TextView albumsTextView;
+        @BindView(R.id.artist_tracks) TextView songsTextView;
 
-        @BindView(R.id.artist_name)
-        TextView nameTextView;
-
-        @BindView(R.id.artist_albums)
-        TextView albumsTextView;
-
-        @BindView(R.id.artist_tracks)
-        TextView songsTextView;
-
-        private Artist artist;
-
-        public ArtistVH(View itemView)
-        {
+        public ArtistVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
-                {
-                    listener.onClickArtist(artist);
-                }
-            });
         }
 
-        public void bind(@NonNull Artist artist)
-        {
-            this.artist = artist;
+        public void bind(@NonNull final Artist artist, final int id) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onClickArtist(artist,id);
+                }
+            });
             picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
             nameTextView.setText(artist.getName());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
-                                                               artist.getAlbumsCount(),
-                                                               artist.getAlbumsCount()));
+                    artist.getAlbumsCount(),
+                    artist.getAlbumsCount()));
             songsTextView.setText(resources.getQuantityString(R.plurals.artistTracks,
-                                                              artist.getTracksCount(),
-                                                              artist.getTracksCount()));
+                    artist.getTracksCount(),
+                    artist.getTracksCount()));
         }
     }
 
-    public interface ArtistsAdapterListener
-    {
-        void onClickArtist(@NonNull Artist artist);
-
-        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
-        {
-            @Override
-            public void onClickArtist(@NonNull Artist artist)
-            {
-
-            }
-        };
+    public interface ArtistsAdapterListener {
+        //todo
+        void onClickArtist(@NonNull Artist artist,int id);
     }
 }
