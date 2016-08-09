@@ -19,6 +19,8 @@ import com.yamblz.memoryleakssample.util.asynctask.GettingArtistsAsyncTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
+import icepick.State;
 
 public class ArtistsListActivity extends AppCompatActivity
 {
@@ -35,6 +37,8 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private AsyncTask<Void, Void, Artist[]> gettingArtistTask;
 
+    @State Artist[] artists;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -43,6 +47,8 @@ public class ArtistsListActivity extends AppCompatActivity
         getWindow().setBackgroundDrawableResource(R.drawable.window_background);
 
         unbinder = ButterKnife.bind(this);
+
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -53,8 +59,13 @@ public class ArtistsListActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        gettingArtistTask = new GettingArtistsAsyncTask(this::showProgress, this::showContent);
-        gettingArtistTask.execute();
+
+        if(artists == null) {
+            gettingArtistTask = new GettingArtistsAsyncTask(this::showProgress, this::showContent);
+            gettingArtistTask.execute();
+        } else {
+            showContent(artists);
+        }
     }
 
     @Override
@@ -64,13 +75,22 @@ public class ArtistsListActivity extends AppCompatActivity
         int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
         Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
         ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
-        gettingArtistTask.cancel(true);
+
+        if(gettingArtistTask != null) {
+            gettingArtistTask.cancel(true);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     private void showProgress()
