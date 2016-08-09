@@ -13,50 +13,41 @@ import com.yamblz.memoryleakssample.model.Artist;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistDetailsActivity extends AppCompatActivity
-{
+import static com.yamblz.memoryleakssample.ui.ArtistsListActivity.ARTIST;
+
+public class ArtistDetailsActivity extends AppCompatActivity {
+    private Artist artist;
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
-
     @BindView(R.id.artist_name)
     TextView nameTextView;
-
     @BindView(R.id.artist_albums)
     TextView albumsTextView;
-
     @BindView(R.id.artist_tracks)
     TextView tracksTextView;
-
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
-
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
+        this.artist = getIntent().getParcelableExtra(ARTIST);
         clearViews();
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        if (artist != null)
-        {
+        if (artist != null) {
             updateArtistView(artist);
-        }
-        else
-        {
+        } else {
             clearViews();
         }
     }
 
-    private void clearViews()
-    {
+    private void clearViews() {
         posterImageView.setImageResource(android.R.color.white);
         nameTextView.setText("");
         albumsTextView.setText("");
@@ -64,16 +55,15 @@ public class ArtistDetailsActivity extends AppCompatActivity
         descriptionTextView.setText("");
     }
 
-    private void updateArtistView(@NonNull Artist artist)
-    {
+    private void updateArtistView(@NonNull Artist artist) {
         Picasso.with(this).load(artist.getCover().getBigImageUrl()).into(posterImageView);
         nameTextView.setText(artist.getName());
         albumsTextView.setText(getResources().getQuantityString(R.plurals.artistAlbums,
-                                                                artist.getAlbumsCount(),
-                                                                artist.getAlbumsCount()));
+                artist.getAlbumsCount(),
+                artist.getAlbumsCount()));
         tracksTextView.setText(getResources().getQuantityString(R.plurals.artistTracks,
-                                                                artist.getTracksCount(),
-                                                                artist.getTracksCount()));
+                artist.getTracksCount(),
+                artist.getTracksCount()));
         descriptionTextView.setText(artist.getDescription());
     }
 }
