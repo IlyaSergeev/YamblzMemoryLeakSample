@@ -1,6 +1,7 @@
 package com.yamblz.memoryleakssample.communication;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -16,27 +17,18 @@ import java.io.InputStreamReader;
 public class Api
 {
     @NonNull
-    private final Context context;
+    private final Resources context;
     private final Gson gson = new Gson();
 
 
-    public Api(@NonNull Context context)
+    public Api(@NonNull Resources context)
     {
         this.context = context;
     }
 
     public Artist[] getArtists() {
 
-//        try
-//        {
-//            Thread.sleep(3000);
-//        }
-//        catch (InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
-
-        InputStream inStream = context.getResources().openRawResource(R.raw.artists);
+        InputStream inStream = context.openRawResource(R.raw.artists);
         InputStreamReader inStreamReader = new InputStreamReader(inStream);
 
         return gson.fromJson(inStreamReader, Artist[].class);

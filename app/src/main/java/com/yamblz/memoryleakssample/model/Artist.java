@@ -2,11 +2,12 @@ package com.yamblz.memoryleakssample.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class Artist
-{
+public class Artist implements Serializable{
     @SerializedName("id")
     private final String id;
 
@@ -36,8 +37,7 @@ public class Artist
                   String[] genres,
                   int tracksCount,
                   int albumsCount,
-                  String webCite, String description, Cover cover)
-    {
+                  String webCite, String description, Cover cover) {
         this.id = id;
         this.name = name;
         this.genres = genres;
@@ -48,43 +48,35 @@ public class Artist
         this.cover = cover;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String[] getGenres()
-    {
+    public String[] getGenres() {
         return genres;
     }
 
-    public int getTracksCount()
-    {
+    public int getTracksCount() {
         return tracksCount;
     }
 
-    public int getAlbumsCount()
-    {
+    public int getAlbumsCount() {
         return albumsCount;
     }
 
-    public String getWebCite()
-    {
+    public String getWebCite() {
         return webCite;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public Cover getCover()
-    {
+    public Cover getCover() {
         return cover;
     }
 }

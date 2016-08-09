@@ -1,5 +1,6 @@
 package com.yamblz.memoryleakssample.ui;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,9 @@ import com.yamblz.memoryleakssample.model.Artist;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ArtistDetailsActivity extends AppCompatActivity
-{
+public class ArtistDetailsActivity extends AppCompatActivity {
+    public static final String EXTRA_ARTIST =
+            "com.yamblz.memoryleakssample.ui.ArtistDetailsActivity.EXTRA_ARTIST";
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
 
@@ -30,50 +32,37 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
-        clearViews();
-    }
 
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        if (artist != null)
-        {
-            updateArtistView(artist);
-        }
-        else
-        {
-            clearViews();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null && extras.containsKey(EXTRA_ARTIST)){
+            Artist artist = (Artist) extras.getSerializable(EXTRA_ARTIST);
+
+            if(artist!=null){
+                updateArtistView(artist);
+            }
         }
     }
 
-    private void clearViews()
-    {
-        posterImageView.setImageResource(android.R.color.white);
-        nameTextView.setText("");
-        albumsTextView.setText("");
-        tracksTextView.setText("");
-        descriptionTextView.setText("");
-    }
-
-    private void updateArtistView(@NonNull Artist artist)
-    {
+    private void updateArtistView(@NonNull Artist artist) {
+        Resources resources = getResources();
         Picasso.with(this).load(artist.getCover().getBigImageUrl()).into(posterImageView);
         nameTextView.setText(artist.getName());
-        albumsTextView.setText(getResources().getQuantityString(R.plurals.artistAlbums,
-                                                                artist.getAlbumsCount(),
-                                                                artist.getAlbumsCount()));
-        tracksTextView.setText(getResources().getQuantityString(R.plurals.artistTracks,
-                                                                artist.getTracksCount(),
-                                                                artist.getTracksCount()));
+        int albumsCount = artist.getAlbumsCount();
+        int tracksCount = artist.getTracksCount();
+
+        albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
+                albumsCount,
+                albumsCount));
+        tracksTextView.setText(resources.getQuantityString(R.plurals.artistTracks,
+                tracksCount,
+                tracksCount));
         descriptionTextView.setText(artist.getDescription());
     }
+
 }
