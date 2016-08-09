@@ -3,6 +3,7 @@ package com.yamblz.memoryleakssample.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,8 @@ import butterknife.ButterKnife;
 
 public class ArtistDetailsActivity extends AppCompatActivity
 {
+    public static final String ARTIST_EXTRA = "artist";
+
     @BindView(R.id.artist_poster)
     ImageView posterImageView;
 
@@ -30,7 +33,7 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
+    private Artist artist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,7 +41,18 @@ public class ArtistDetailsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
+
+        Bundle bundle = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+
+        artist = bundle.getParcelable(ARTIST_EXTRA);
+
         clearViews();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ARTIST_EXTRA, artist);
     }
 
     @Override
