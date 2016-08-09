@@ -1,0 +1,22 @@
+package com.yamblz.memoryleakssample;
+
+import android.app.Application;
+
+import com.yamblz.memoryleakssample.communication.Api;
+
+/**
+ * Created by i-sergeev on 07.07.16
+ */
+public class App extends Application {
+    private static Api api;
+
+    public static Api getApi() {
+        return api;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        api = new Api(this);
+    }
+}

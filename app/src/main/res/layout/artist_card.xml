@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="128dp"
-                android:layout_gravity="center"
-                android:background="@android:color/white"
-                android:layoutDirection="ltr"
-                tools:ignore="UnusedAttribute,HardcodedText,RtlHardcoded">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    tools:ignore="RtlHardcoded,RtlSymmetry">
 
     <ImageView
-        android:id="@+id/artist_poster"
+        android:id="@+id/artist_cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@android:color/holo_red_dark"
         tools:ignore="ContentDescription"/>
 
     <View
@@ -23,44 +19,39 @@
         android:background="@drawable/fade_shadow"/>
 
     <TextView
-        android:id="@+id/artist_name"
+        android:id="@+id/artist_tracks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/artist_tracks"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/artist_tracks"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:text="Artist Name"
-        android:textAppearance="?android:attr/textAppearance"
-        android:textColor="@android:color/white"
-        />
-
-    <TextView
-        android:id="@+id/artist_tracks"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/artist_name"
-        android:layout_marginBottom="4dp"
-        android:gravity="right"
-        android:text="123 песни"
+        android:layout_alignParentRight="true"
+        android:layout_margin="4dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
         android:textStyle="italic"/>
 
     <TextView
         android:id="@+id/artist_albums"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/artist_tracks"
-        android:layout_alignLeft="@+id/artist_tracks"
-        android:layout_alignRight="@+id/artist_tracks"
-        android:gravity="right"
-        android:text="12 альбомов"
+        android:layout_above="@id/artist_tracks"
+        android:layout_alignParentRight="true"
+        android:paddingRight="4dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
         android:textStyle="italic"/>
 
+    <TextView
+        android:id="@+id/artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="4dp"
+        android:layout_toLeftOf="@id/artist_tracks"
+        android:ellipsize="end"
+        android:gravity="left"
+        android:maxLines="1"
+        android:textAppearance="?android:attr/textAppearance"
+        android:textColor="@android:color/white"/>
 
 </RelativeLayout>
