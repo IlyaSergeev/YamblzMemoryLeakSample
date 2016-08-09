@@ -1,8 +1,11 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,40 +14,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.yamblz.memoryleakssample.ArtistsLoader;
 import com.yamblz.memoryleakssample.R;
 import com.yamblz.memoryleakssample.model.Artist;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by i-sergeev on 01.07.16
  */
 public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH> {
-    @Nullable
+    @NonNull
     private final List<Artist> artists;
-
-    @NonNull
-    private final Picasso picasso;
-
-    @NonNull
-    private final Resources resources;
 
     @NonNull
     private final ArtistsAdapterListener listener;
 
     public ArtistsAdapter(@Nullable List<Artist> artists,
-                          @NonNull Picasso picasso,
-                          @NonNull Resources resources,
                           ArtistsAdapterListener listener) {
-        this.picasso = picasso;
-        this.resources = resources;
 
-
+        if (artists == null) {
+            artists = new LinkedList<>();
+        }
         this.artists = artists;
+
 
         if (listener == null) {
             listener = ArtistsAdapterListener.NULL;
@@ -82,8 +79,17 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
 
     @Override
     public int getItemCount() {
-        return artists == null ? 0 : artists.size();
+        return artists.size();
     }
+
+    public void setDataset(List<Artist> artists) {
+        if (artists != null && !this.artists.containsAll(artists)) {
+            this.artists.clear();
+            this.artists.addAll(artists);
+            notifyDataSetChanged();
+        }
+    }
+
 
     public class ArtistVH extends RecyclerView.ViewHolder {
         @BindView(R.id.artist_poster)
@@ -98,16 +104,16 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
         @BindView(R.id.artist_tracks)
         TextView songsTextView;
 
-        private Artist artist;
-
         public ArtistVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
         public void bind(@NonNull Artist artist) {
-            this.artist = artist;
-            picasso.load(artist.getCover().getSmallImageUrl()).into(posterImageView);
+            final Resources resources = posterImageView.getResources();
+
+            Picasso.with(posterImageView.getContext())
+                    .load(artist.getCover().getSmallImageUrl()).into(posterImageView);
             nameTextView.setText(artist.getName());
             albumsTextView.setText(resources.getQuantityString(R.plurals.artistAlbums,
                     artist.getAlbumsCount(),

@@ -1,27 +1,27 @@
 package com.yamblz.memoryleakssample.ui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.squareup.picasso.Picasso;
+import com.yamblz.memoryleakssample.ArtistsLoader;
 import com.yamblz.memoryleakssample.R;
-import com.yamblz.memoryleakssample.SampleApplication;
 import com.yamblz.memoryleakssample.model.Artist;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
-public class ArtistsListActivity extends AppCompatActivity {
+public class ArtistsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Artist>> {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
@@ -42,34 +42,16 @@ public class ArtistsListActivity extends AppCompatActivity {
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new AsyncTask<Void, Void, List<Artist>>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                showProgress();
-            }
-
-            @Override
-            protected List<Artist> doInBackground(Void... voids) {
-                return SampleApplication.getApi().getArtists();
-            }
-
-            @Override
-            protected void onPostExecute(List<Artist> artists) {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        artistsAdapter = new ArtistsAdapter(null,
+                new ArtistsAdapter.ArtistsAdapterListener() {
+                    @Override
+                    public void onClickArtist(@NonNull Artist artist) {
+                        showArtistDetails(artist);
+                    }
+                });
+        recyclerView.setAdapter(artistsAdapter);
+        getSupportLoaderManager().initLoader(1, null, this);
     }
 
     private void showProgress() {
@@ -81,16 +63,7 @@ public class ArtistsListActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        artistsAdapter = new ArtistsAdapter(data,
-                Picasso.with(this),
-                getResources(),
-                new ArtistsAdapter.ArtistsAdapterListener() {
-                    @Override
-                    public void onClickArtist(@NonNull Artist artist) {
-                        showArtistDetails(artist);
-                    }
-                });
-        recyclerView.setAdapter(artistsAdapter);
+        artistsAdapter.setDataset(data);
     }
 
     private void showArtistDetails(@NonNull Artist artist) {
@@ -98,4 +71,18 @@ public class ArtistsListActivity extends AppCompatActivity {
         startActivity(new Intent(this, ArtistDetailsActivity.class));
     }
 
+    @Override
+    public Loader<List<Artist>> onCreateLoader(int id, Bundle args) {
+        return new ArtistsLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Artist>> loader, List<Artist> data) {
+        showContent(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Artist>> loader) {
+
+    }
 }
