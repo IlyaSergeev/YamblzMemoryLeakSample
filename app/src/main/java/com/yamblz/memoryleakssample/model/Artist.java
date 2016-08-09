@@ -1,11 +1,14 @@
 package com.yamblz.memoryleakssample.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by i-sergeev on 01.07.16
  */
-public class Artist
+public class Artist implements Parcelable
 {
     @SerializedName("id")
     private final String id;
@@ -46,6 +49,23 @@ public class Artist
         this.webCite = webCite;
         this.description = description;
         this.cover = cover;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeStringArray(genres);
+        parcel.writeInt(tracksCount);
+        parcel.writeInt(albumsCount);
+        parcel.writeString(webCite);
+        parcel.writeString(description);
+        parcel.writeParcelable(cover, i);
     }
 
     public String getId()
