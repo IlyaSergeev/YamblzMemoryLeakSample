@@ -22,7 +22,7 @@ public class Api
 
     public Api(@NonNull Context context)
     {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     public Artist[] getArtists() {

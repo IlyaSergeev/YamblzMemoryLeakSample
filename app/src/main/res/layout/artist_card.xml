@@ -4,7 +4,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="128dp"
                 android:layout_gravity="center"
-                android:background="@android:color/white"
                 android:layoutDirection="ltr"
                 tools:ignore="UnusedAttribute,HardcodedText,RtlHardcoded">
 
@@ -13,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@android:color/holo_red_dark"
         tools:ignore="ContentDescription"/>
 
     <View
