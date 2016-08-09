@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.yamblz.memoryleakssample.ui.ArtistDetailsActivity"
     tools:ignore="HardcodedText,RtlHardcoded">
 
     <ImageView
         android:id="@+id/artist_poster"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:scaleType="centerInside"
-        android:src="@android:color/holo_red_dark"
+        android:scaleType="centerCrop"
         tools:ignore="ContentDescription"/>
 
     <TextView

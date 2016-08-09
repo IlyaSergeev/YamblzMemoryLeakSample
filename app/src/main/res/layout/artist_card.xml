@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="128dp"
-                android:layout_gravity="center"
-                android:background="@android:color/white"
-                android:layoutDirection="ltr"
-                tools:ignore="UnusedAttribute,HardcodedText,RtlHardcoded">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:layout_gravity="center"
+    android:background="@drawable/window_background"
+    tools:ignore="UnusedAttribute,HardcodedText,RtlHardcoded">
 
     <ImageView
         android:id="@+id/artist_poster"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@android:color/holo_red_dark"
-        tools:ignore="ContentDescription"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/fade_shadow"/>
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/artist_name"
@@ -34,8 +26,7 @@
         android:layout_marginRight="4dp"
         android:text="Artist Name"
         android:textAppearance="?android:attr/textAppearance"
-        android:textColor="@android:color/white"
-        />
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/artist_tracks"
@@ -47,7 +38,7 @@
         android:text="123 песни"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
-        android:textStyle="italic"/>
+        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/artist_albums"
@@ -60,7 +51,7 @@
         android:text="12 альбомов"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
-        android:textStyle="italic"/>
+        android:textStyle="italic" />
 
 
 </RelativeLayout>
