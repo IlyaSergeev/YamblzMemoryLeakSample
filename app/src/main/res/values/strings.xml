@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Memory Leaks Sample</string>
+    <string name="no_net_error_message">No internet connection!</string>
 </resources>

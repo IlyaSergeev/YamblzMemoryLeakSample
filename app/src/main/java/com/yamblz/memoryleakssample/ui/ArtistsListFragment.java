@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 public class ArtistsListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Artist[]> {
     private static final int SPAN_COUNT = 2;
     private static final int LOADER_ID = 1;
+    public static final String TRANSACTION_NAME = "details";
 
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
@@ -40,14 +41,9 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
 
-    private GridLayoutManager gridLayoutManager;
-    private ArtistsAdapter artistsAdapter;
     private Resources resources;
     private Context context;
     private Artist[] artists;
-
-
-
 
     @Nullable
     @Override
@@ -59,7 +55,7 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        gridLayoutManager = new GridLayoutManager(context, SPAN_COUNT);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, SPAN_COUNT);
         recyclerView.setLayoutManager(gridLayoutManager);
 
         context = getContext();
@@ -69,7 +65,7 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
                 resources.getDimensionPixelSize(R.dimen.card_insets));
         recyclerView.addItemDecoration(decoration);
 
-        if(artists == null && savedInstanceState == null){
+        if (artists == null && savedInstanceState == null) {
             getLoaderManager().initLoader(
                     LOADER_ID,
                     null,
@@ -81,7 +77,7 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
 
     private void showContent() {
         hideProgress();
-        artistsAdapter = new ArtistsAdapter(artists,
+        ArtistsAdapter artistsAdapter = new ArtistsAdapter(artists,
                 Picasso.with(context),
                 resources,
                 this::showArtistDetails);
@@ -95,16 +91,17 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
         Bundle args = new Bundle();
         args.putSerializable(ArtistDetailsFragment.ARGUMENT_ARTIST, artist);
         fragment.setArguments(args);
+
         getFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack("details")
+                .addToBackStack(TRANSACTION_NAME)
                 .replace(R.id.flContainer, fragment)
                 .commit();
     }
 
     @Override
     public Loader<Artist[]> onCreateLoader(int id, Bundle args) {
-        if(isOnline()) {
+        if (isOnline()) {
             showProgress();
             return new AsyncTaskLoader<Artist[]>(context) {
                 @Override
@@ -112,15 +109,14 @@ public class ArtistsListFragment extends Fragment implements LoaderManager.Loade
                     return SampleApplication.from(context).getApi().getArtists();
                 }
             };
-        }else{
-            Toast.makeText(context,"No internet connection!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, R.string.no_net_error_message, Toast.LENGTH_SHORT).show();
             return null;
         }
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
