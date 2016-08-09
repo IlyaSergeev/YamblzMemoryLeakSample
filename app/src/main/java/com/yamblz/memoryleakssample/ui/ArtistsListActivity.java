@@ -70,9 +70,6 @@ public class ArtistsListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-        ((SampleApplication) getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
     }
 
     private void showProgress() {
@@ -94,16 +91,6 @@ public class ArtistsListActivity extends AppCompatActivity {
                     }
                 });
         recyclerView.setAdapter(artistsAdapter);
-
-        Artist firstVisibleArtist = ((SampleApplication) getApplication()).getFirstVisibleArtistInListActivity();
-        if (firstVisibleArtist != null) {
-            for (int i = 0; i < data.size(); i++) {
-                if (data.get(i).getId().equals(firstVisibleArtist.getId())) {
-                    recyclerView.scrollToPosition(i);
-                    break;
-                }
-            }
-        }
     }
 
     private void showArtistDetails(@NonNull Artist artist) {

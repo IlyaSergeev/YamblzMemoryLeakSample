@@ -19,15 +19,6 @@ public class SampleApplication extends Application
         return api;
     }
 
-    public Artist getFirstVisibleArtistInListActivity()
-    {
-        return firstVisibleArtistInListActivity;
-    }
-
-    public void setFirstVisibleArtistInListActivity(Artist firstVisibleArtistInListActivity)
-    {
-        this.firstVisibleArtistInListActivity = firstVisibleArtistInListActivity;
-    }
 
     @Override
     public void onCreate()
