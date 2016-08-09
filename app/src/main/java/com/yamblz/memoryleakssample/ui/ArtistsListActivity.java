@@ -1,6 +1,5 @@
 package com.yamblz.memoryleakssample.ui;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,26 +16,26 @@ import com.yamblz.memoryleakssample.model.Artist;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
-public class ArtistsListActivity extends AppCompatActivity
-{
+public class ArtistsListActivity extends AppCompatActivity {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
-
+    int firstVisiblePosition;
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
+    private Unbinder unbinder;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artisits_list);
-        getWindow().setBackgroundDrawableResource(R.drawable.window_background);
+        getWindow().setBackgroundDrawable(null);
 
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
 
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -44,27 +43,22 @@ public class ArtistsListActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
+        new AsyncTask<Void, Void, Artist[]>() {
             @Override
-            protected void onPreExecute()
-            {
+            protected void onPreExecute() {
                 super.onPreExecute();
                 showProgress();
             }
 
             @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
-                return SampleApplication.getApi().getArtists();
+            protected Artist[] doInBackground(Void... voids) {
+                return SampleApplication.from(getApplicationContext()).getApi().getArtists();
             }
 
             @Override
-            protected void onPostExecute(Artist[] artists)
-            {
+            protected void onPostExecute(Artist[] artists) {
                 super.onPostExecute(artists);
                 showContent(artists);
             }
@@ -72,56 +66,40 @@ public class ArtistsListActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
-        int firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Artist firstVisibleArtist = artistsAdapter.getArtist(firstVisiblePosition);
-        ((SampleApplication)getApplication()).setFirstVisibleArtistInListActivity(firstVisibleArtist);
+        firstVisiblePosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
     }
 
-    private void showProgress()
-    {
+    private void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
     }
 
-    private void showContent(Artist[] data)
-    {
+    private void showContent(Artist[] data) {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
         artistsAdapter = new ArtistsAdapter(data,
-                                            Picasso.with(this),
-                                            getResources(),
-                                            new ArtistsAdapter.ArtistsAdapterListener()
-                                            {
-                                                @Override
-                                                public void onClickArtist(@NonNull Artist artist)
-                                                {
-                                                    showArtistDetails(artist);
-                                                }
-                                            });
+                Picasso.with(this),
+                getResources(),
+                new ArtistsAdapter.ArtistsAdapterListener() {
+                    @Override
+                    public void onClickArtist(@NonNull Artist artist) {
+                        showArtistDetails(artist);
+                    }
+                });
         recyclerView.setAdapter(artistsAdapter);
-        artistsAdapter.notifyDataSetChanged();
-
-        Artist firstVisibleArtist = ((SampleApplication)getApplication()).getFirstVisibleArtistInListActivity();
-        if (firstVisibleArtist != null)
-        {
-            for (int i = 0; i < data.length; i++)
-            {
-                if (data[i].getId().equals(firstVisibleArtist.getId()))
-                {
-                    recyclerView.scrollToPosition(i);
-                    break;
-                }
-            }
-        }
+        recyclerView.scrollToPosition(firstVisiblePosition);
     }
 
-    private void showArtistDetails(@NonNull Artist artist)
-    {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+    private void showArtistDetails(@NonNull Artist artist) {
+        startActivity(ArtistDetailsActivity.newIntent(artist, getApplicationContext()));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }
