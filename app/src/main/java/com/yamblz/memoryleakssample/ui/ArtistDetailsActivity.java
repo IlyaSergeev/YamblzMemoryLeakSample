@@ -30,8 +30,6 @@ public class ArtistDetailsActivity extends AppCompatActivity
     @BindView(R.id.artist_description)
     TextView descriptionTextView;
 
-    public static Artist artist;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -39,20 +37,8 @@ public class ArtistDetailsActivity extends AppCompatActivity
         setContentView(R.layout.activity_artist_details);
         ButterKnife.bind(this);
         clearViews();
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        if (artist != null)
-        {
-            updateArtistView(artist);
-        }
-        else
-        {
-            clearViews();
-        }
+        Artist artist = getIntent().getParcelableExtra("artist");
+        updateArtistView(artist);
     }
 
     private void clearViews()

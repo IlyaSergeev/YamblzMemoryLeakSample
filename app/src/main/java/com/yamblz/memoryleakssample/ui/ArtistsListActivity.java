@@ -29,6 +29,8 @@ public class ArtistsListActivity extends AppCompatActivity
     private GridLayoutManager gridLayoutManager;
     private ArtistsAdapter artistsAdapter;
 
+    private static AsyncTask asyncTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -47,28 +49,26 @@ public class ArtistsListActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        new AsyncTask<Void, Void, Artist[]>()
-        {
-            @Override
-            protected void onPreExecute()
-            {
-                super.onPreExecute();
-                showProgress();
-            }
+        if ((asyncTask == null)||(asyncTask.getStatus() != AsyncTask.Status.FINISHED)) {
+            asyncTask = new AsyncTask<Void, Void, Artist[]>() {
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    showProgress();
+                }
 
-            @Override
-            protected Artist[] doInBackground(Void... voids)
-            {
-                return SampleApplication.getApi().getArtists();
-            }
+                @Override
+                protected Artist[] doInBackground(Void... voids) {
+                    return SampleApplication.getApi().getArtists();
+                }
 
-            @Override
-            protected void onPostExecute(Artist[] artists)
-            {
-                super.onPostExecute(artists);
-                showContent(artists);
-            }
-        }.execute();
+                @Override
+                protected void onPostExecute(Artist[] artists) {
+                    super.onPostExecute(artists);
+                    showContent(artists);
+                }
+            }.execute();
+        }
     }
 
     @Override
@@ -121,7 +121,8 @@ public class ArtistsListActivity extends AppCompatActivity
 
     private void showArtistDetails(@NonNull Artist artist)
     {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra("artist", artist);
+        startActivity(intent);
     }
 }

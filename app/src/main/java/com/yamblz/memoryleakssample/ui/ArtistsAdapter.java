@@ -49,7 +49,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
 
         if (listener == null)
         {
-            listener = ArtistsAdapterListener.NULL;
+            listener = ArtistsAdapterListener.EMPTY_LISTENER;
         }
         this.listener = listener;
     }
@@ -63,8 +63,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     @Override
     public ArtistVH onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.artist_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.artist_card, parent, false);
         return new ArtistVH(view);
     }
 
@@ -128,7 +127,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVH
     {
         void onClickArtist(@NonNull Artist artist);
 
-        public static ArtistsAdapterListener NULL = new ArtistsAdapterListener()
+        ArtistsAdapterListener EMPTY_LISTENER = new ArtistsAdapterListener()
         {
             @Override
             public void onClickArtist(@NonNull Artist artist)
