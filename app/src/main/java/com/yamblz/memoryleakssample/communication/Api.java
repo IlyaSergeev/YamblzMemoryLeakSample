@@ -32,20 +32,15 @@ public class Api
             e.printStackTrace();
         }
 
-        InputStreamReader inStreamReader = null;
-        try {
-            inStreamReader = new InputStreamReader(
+        InputStreamReader inStreamReader = new InputStreamReader(
                     context.getResources().openRawResource(R.raw.artists));
-            context = null;
-            return gson.fromJson(inStreamReader, Artist[].class);
-        } finally {
-            if (inStreamReader != null) {
-                try {
-                    inStreamReader.close();
-                } catch (IOException e) {
-                    Log.d(this.getClass().getSimpleName(), "error during close", e);
-                }
-            }
+        context = null;
+        Artist[] artists = gson.fromJson(inStreamReader, Artist[].class);
+        try {
+            inStreamReader.close();
+        } catch (IOException e) {
+            Log.d(this.getClass().getSimpleName(), "error during close", e);
         }
+        return artists;
     }
 }

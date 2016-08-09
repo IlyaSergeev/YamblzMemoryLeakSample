@@ -33,9 +33,6 @@ public class ArtistsListActivity extends AppCompatActivity
     @BindView(R.id.artists_recycler_view)
     RecyclerView recyclerView;
 
-    private GridLayoutManager gridLayoutManager;
-    private ArtistsAdapter artistsAdapter;
-
     private Subscription subscription;
     private Artist[] artists;
 
@@ -48,7 +45,7 @@ public class ArtistsListActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        gridLayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this));
 
@@ -107,24 +104,23 @@ public class ArtistsListActivity extends AppCompatActivity
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
 
-        artistsAdapter = new ArtistsAdapter(data,
-                                            Picasso.with(this),
-                                            getResources(),
-                                            new ArtistsAdapter.ArtistsAdapterListener()
-                                            {
-                                                @Override
-                                                public void onClickArtist(@NonNull Artist artist)
-                                                {
-                                                    showArtistDetails(artist);
-                                                }
-                                            });
+        ArtistsAdapter artistsAdapter = new ArtistsAdapter(data,
+                Picasso.with(this),
+                getResources(),
+                new ArtistsAdapter.ArtistsAdapterListener() {
+                    @Override
+                    public void onClickArtist(@NonNull Artist artist) {
+                        showArtistDetails(artist);
+                    }
+                });
         recyclerView.setAdapter(artistsAdapter);
         artistsAdapter.notifyDataSetChanged();
     }
 
     private void showArtistDetails(@NonNull Artist artist)
     {
-        ArtistDetailsActivity.artist = artist;
-        startActivity(new Intent(this, ArtistDetailsActivity.class));
+        Intent intent = new Intent(this, ArtistDetailsActivity.class);
+        intent.putExtra(ArtistDetailsActivity.ARTIST_EXTRA, artist);
+        startActivity(intent);
     }
 }
