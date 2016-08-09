@@ -46,7 +46,6 @@ public class ArtistsListActivity extends AppCompatActivity {
         getWindow().setBackgroundDrawableResource(R.drawable.window_background);
 
         ButterKnife.bind(this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
 
         gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -71,6 +70,12 @@ public class ArtistsListActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
